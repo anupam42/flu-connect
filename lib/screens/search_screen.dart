@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
 import '../screens/profile_screen.dart';
 import '../utils/colors.dart';
 import '../utils/page_animation.dart';
-import '../utils/utils.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -16,7 +13,6 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
-
   bool isShowUser = false;
 
   @override
@@ -25,22 +21,23 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
+  void searchUsers() {
+    setState(() {
+      isShowUser = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
         title: TextFormField(
+          controller: searchController,
           decoration: const InputDecoration(
             labelText: 'Search for a user',
           ),
-          controller: searchController,
-          onFieldSubmitted: (_) {
-            setState(() {
-              isShowUser = true;
-            });
-          },
+          onFieldSubmitted: (_) => searchUsers(),
         ),
       ),
       body: isShowUser
@@ -53,72 +50,47 @@ class _SearchScreenState extends State<SearchScreen> {
                   )
                   .get(),
               builder: (context, snapshot) {
+                // Loading state
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
+                // If no user found or snapshot is not valid
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text('No users found.'),
+                  );
+                }
+
+                // Build the user list
                 return ListView.builder(
-                  itemCount: (snapshot.data! as dynamic).docs.length,
+                  itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
+                    final userData = snapshot.data!.docs[index];
                     return InkWell(
                       onTap: () => Navigator.of(context).push(
                         PageAnimation.createRoute(
-                            page: ProfileScreen(
-                              uid: (snapshot.data! as dynamic).docs[index]
-                                  ['uid'],
-                            ),
-                            beginOffset1: 0.0,
-                            beginOffset2: 1.0),
+                          page: ProfileScreen(uid: userData['uid']),
+                          beginOffset1: 0.0,
+                          beginOffset2: 1.0,
+                        ),
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(
-                            (snapshot.data! as dynamic).docs[index]['photourl'],
+                            userData['photourl'],
                           ),
                         ),
-                        title: Text(
-                          (snapshot.data! as dynamic).docs[index]['username'],
-                        ),
+                        title: Text(userData['username']),
                       ),
                     );
                   },
                 );
               },
             )
-          : FutureBuilder(
-              future: FirebaseFirestore.instance.collection('posts').get(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData ||
-                    snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
-                return StaggeredGridView.countBuilder(
-                  crossAxisCount: 3,
-                  itemCount: (snapshot.data! as dynamic).docs.length,
-                  itemBuilder: (context, index) {
-                    return Image.network(
-                      (snapshot.data! as dynamic).docs[index]['posturl'],
-                    );
-                  },
-                  staggeredTileBuilder: (index) => width > webScreenSize
-                      ? StaggeredTile.count(
-                          (index % 7) == 0 ? 1 : 1,
-                          (index % 7) == 0 ? 1 : 1,
-                        )
-                      : StaggeredTile.count(
-                          (index % 7) == 0 ? 2 : 1,
-                          (index % 7) == 0 ? 2 : 1,
-                        ),
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                );
-              },
-            ),
+          : Container(), // Show an empty container if user hasn't searched yet
     );
   }
 }
