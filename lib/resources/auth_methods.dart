@@ -27,7 +27,7 @@ class AuthMethods {
     required String password,
     required String username,
     required String bio,
-    required Uint8List? file,
+    Uint8List? file, // Removed 'required'
   }) async {
     String res = "Some error occured";
 
@@ -35,14 +35,14 @@ class AuthMethods {
       if (email.trim().isNotEmpty ||
           username.trim().isNotEmpty ||
           bio.trim().isNotEmpty ||
-          file != null) {
+            true) {
         // register user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
 
         String photoUrl = await StorageMethods().uploadImageToStorage(
-          'profilePic',
-          file!,
+            'profilePic',
+            file ?? Uint8List(0), // Handle null case
           false,
         );
 
@@ -81,7 +81,10 @@ class AuthMethods {
         res = 'Password should be atleast 6 characters';
       }
     } catch (e) {
-      res = 'Some error occured, try again';
+      // Add logs
+      print('Error during sign up: $e');
+      
+      res = 'Some error occurred, try again';
     }
 
     return res;

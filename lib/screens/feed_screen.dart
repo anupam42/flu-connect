@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:insta_clone/screens/food_listing_screen.dart';
 
 import '../utils/colors.dart';
 import '../widgets/post_card.dart';
@@ -23,26 +25,31 @@ class FeedScreen extends StatelessWidget {
             ? null
             : AppBar(
                 backgroundColor: mobileBackgroundColor,
-                title: SvgPicture.asset(
-                  'assets/insta_logo.svg',
-                  color: primaryColor,
-                  height: 32,
-                ),
-                actions: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        PageAnimation.createRoute(
-                            page: const ChatScreen(),
-                            beginOffset1: 1.0,
-                            beginOffset2: 0.0),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.message_outlined,
-                    ),
-                  ),
-                ],
+                // title: SvgPicture.asset(
+                //   'assets/insta_logo.svg',
+                //   color: primaryColor,
+                //   height: 32,
+                // ),
+                title: Text('Connect', style: GoogleFonts.meowScript(
+                  textStyle: Theme.of(context).textTheme.displayLarge,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                )),
+                // actions: [
+                //   IconButton(
+                //     onPressed: () {
+                //       Navigator.of(context).push(
+                //         PageAnimation.createRoute(
+                //             page: const ChatScreen(),
+                //             beginOffset1: 1.0,
+                //             beginOffset2: 0.0),
+                //       );
+                //     },
+                //     icon: const Icon(
+                //       Icons.message_outlined,
+                //     ),
+                //   ),
+                // ],
               ),
         body: RefreshIndicator(
           onRefresh: () async {
@@ -110,6 +117,18 @@ class FeedScreen extends StatelessWidget {
             ),
           ),
         ),
+
+        floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to FoodListScreen
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const FoodListScreen(),
+            ),
+          );
+        },
+        child: const Icon(Icons.shopping_bag_rounded),
+      ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../responsive/mobile_screen_layout.dart';
 import '../responsive/responsive_screen_layout.dart';
@@ -56,10 +57,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ),
 
                 //svg img
-                SvgPicture.asset(
-                  'assets/insta_logo.svg',
-                  color: primaryColor,
-                  height: 60,
+                Text(
+                  'Connect',
+                  style: GoogleFonts.meowScript(
+                    textStyle: Theme.of(context).textTheme.displayLarge,
+                    fontSize: 48,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(
                   height: 30,

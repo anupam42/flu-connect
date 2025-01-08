@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../responsive/mobile_screen_layout.dart';
@@ -49,30 +50,32 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Flexible(
-                //   flex: 2,
-                //   child: Container(),
-                // ),
-                const SizedBox(
-                  height: 50,
-                ),
+                const SizedBox(height: 50),
 
-                //svg img
-                SvgPicture.asset(
-                  'assets/insta_logo.svg',
-                  color: primaryColor,
-                  height: 60,
+                // SVG Instagram logo
+                // SvgPicture.asset(
+                //   'assets/insta_logo.svg',
+                //   color: primaryColor,
+                //   height: 60,
+                // ),
+                Text(
+                  'Connect',
+                  style: GoogleFonts.meowScript(
+                    textStyle: Theme.of(context).textTheme.displayLarge,
+                    fontSize: 48,
+                    fontWeight: FontWeight.w700,
+                  )
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
 
                 // circular widget to show our selected image
                 Stack(
                   children: [
                     _image != null
                         ? CircleAvatar(
-                            radius: 64, backgroundImage: MemoryImage(_image!))
+                            radius: 64,
+                            backgroundImage: MemoryImage(_image!),
+                          )
                         : const CircleAvatar(
                             radius: 64,
                             backgroundImage: NetworkImage(
@@ -84,59 +87,47 @@ class _SignupScreenState extends State<SignupScreen> {
                       left: 80,
                       child: IconButton(
                         onPressed: selectImage,
-                        icon: const Icon(
-                          Icons.add_a_photo,
-                        ),
+                        icon: const Icon(Icons.add_a_photo),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
 
-                // text ip for username
+                // text input for username
                 TextFieldInput(
                   textEditingController: _usernameController,
                   hintText: 'Enter your username',
                   textInputType: TextInputType.text,
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
 
-                // text ip for bio
+                // text input for bio
                 TextFieldInput(
                   textEditingController: _bioController,
                   hintText: 'Enter your bio',
                   textInputType: TextInputType.text,
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
 
-                // text ip for email
+                // text input for email
                 TextFieldInput(
                   textEditingController: _emailController,
                   hintText: 'Enter your email',
                   textInputType: TextInputType.emailAddress,
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
 
-                // text ip for pass
+                // text input for password
                 TextFieldInput(
                   textEditingController: _passwordController,
                   hintText: 'Enter your password',
                   textInputType: TextInputType.text,
                   isPass: true,
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
 
-                // button signup
+                // Sign-up button
                 InkWell(
                   onTap: () => signupUser(context),
                   child: Container(
@@ -153,22 +144,14 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     child: isLoading
                         ? const Center(
-                            child: CircularProgressIndicator(
-                              color: primaryColor,
-                            ),
+                            child: CircularProgressIndicator(color: primaryColor),
                           )
                         : const Text('Sign up'),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                // Flexible(
-                //   flex: 2,
-                //   child: Container(),
-                // ),
+                const SizedBox(height: 20),
 
-                // login
+                // Already have an account? Login
                 InkWell(
                   onTap: () => navigateToLogin(),
                   child: const Row(
@@ -177,13 +160,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       Text('Already have an account? '),
                       Text(
                         'Login',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30),
-                      ),
+                      Padding(padding: EdgeInsets.symmetric(vertical: 30)),
                     ],
                   ),
                 )
@@ -211,12 +190,13 @@ class _SignupScreenState extends State<SignupScreen> {
       password: _passwordController.text,
       username: _usernameController.text,
       bio: _bioController.text,
-      file: _image,
+      file: _image, // <-- pass the (nullable) image here
     );
 
     if (res != 'Success') {
       showSnackBar(res, context);
     } else {
+      // If success, navigate to the main app screen
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => const ResponsiveLayout(
@@ -235,7 +215,10 @@ class _SignupScreenState extends State<SignupScreen> {
   void navigateToLogin() {
     Navigator.of(context).pushReplacement(
       PageAnimation.createRoute(
-          page: const LoginScreen(), beginOffset1: 0.0, beginOffset2: 1.0),
+        page: const LoginScreen(),
+        beginOffset1: 0.0,
+        beginOffset2: 1.0,
+      ),
     );
   }
 }

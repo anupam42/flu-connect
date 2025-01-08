@@ -17,7 +17,7 @@ class Post {
     required this.postId,
     required this.datePublished,
     required this.postUrl,
-    required this.profileImage,
+    this.profileImage = '',
     required this.likes,
   });
 

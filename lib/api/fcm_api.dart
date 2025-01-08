@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '/constants.dart';
+import 'constant.dart';
+
+const String baseUrl = 'https://your-api-url.com';
 
 class FirebaseApi {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -54,7 +56,7 @@ class FirebaseApi {
       var url = baseUrl;
       var header = {
         "Content-Type": "application/json",
-        "Authorization": "key= $keyServer",
+        "Authorization": "key= $fcmServerKey",
       };
 
       var request = {
