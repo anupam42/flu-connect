@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:connect/screens/food_listing_screen.dart';
 
 import '../utils/colors.dart';
 import '../widgets/post_card.dart';
@@ -116,18 +115,6 @@ class FeedScreen extends StatelessWidget {
             ),
           ),
         ),
-
-        floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to FoodListScreen
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const FoodListScreen(),
-            ),
-          );
-        },
-        child: const Icon(Icons.shopping_bag_rounded),
-      ),
       ),
     );
   }
