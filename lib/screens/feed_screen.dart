@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:insta_clone/screens/food_listing_screen.dart';
+import 'package:connect/screens/food_listing_screen.dart';
 
 import '../utils/colors.dart';
 import '../widgets/post_card.dart';

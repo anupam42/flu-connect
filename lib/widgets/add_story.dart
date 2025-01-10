@@ -34,11 +34,12 @@ class AddStory extends StatelessWidget {
                       radius: 30,
                     ),
                     const Positioned(
-                      bottom: 0,
+                      bottom: 4,
                       right: 0,
                       child: Icon(
                         size: 20,
-                        Icons.add,
+                        Icons.add_circle_rounded,
+                        color: primaryColor,
                       ),
                     ),
                   ],
