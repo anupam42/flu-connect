@@ -28,6 +28,20 @@ class _VideoReelPageState extends State<VideoReelPage> {
     super.dispose();
   }
 
+  void _onFavoritePressed() {
+    // Implement favorite functionality here
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Favorited!')),
+    );
+  }
+
+  void _onSharePressed() {
+    // Implement share functionality here
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Share action triggered!')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,6 +60,33 @@ class _VideoReelPageState extends State<VideoReelPage> {
                   reelUrl: currentReelUrl,
                 ),
               ),
+              // Favorite Icon Positioned
+              Positioned(
+                bottom: 100, // adjust based on layout preferences
+                right: 20,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.favorite_border,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  onPressed: _onFavoritePressed,
+                ),
+              ),
+              // Share Icon Positioned
+              Positioned(
+                bottom: 150, // adjust based on layout preferences
+                right: 20,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.share,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  onPressed: _onSharePressed,
+                ),
+              ),
+              // Existing Shopping Bag FloatingActionButton
               Positioned(
                 bottom: 20,
                 right: 20,
