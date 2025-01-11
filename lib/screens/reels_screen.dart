@@ -1,6 +1,8 @@
-import 'package:connect/screens/food_listing_screen.dart';
+import 'package:connect/models/product.dart';
+import 'package:connect/models/reels.dart';
+import 'package:connect/screens/product_listing_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:connect/widgets/video_player.dart'; // Ensure this imports your VideoPlayerWidget
+import 'package:connect/widgets/video_player.dart'; 
 
 class VideoReelPage extends StatefulWidget {
   const VideoReelPage({super.key, required this.reels, required this.index});
@@ -13,7 +15,6 @@ class VideoReelPage extends StatefulWidget {
 
 class _VideoReelPageState extends State<VideoReelPage> {
   late PageController _pageController;
-  int currentPage = 0;
 
   @override
   void initState() {
@@ -31,36 +32,32 @@ class _VideoReelPageState extends State<VideoReelPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      // No global floatingActionButton here since we want one per reel
       body: PageView.builder(
         scrollDirection: Axis.vertical,
         controller: _pageController,
         itemCount: widget.reels.length,
-        onPageChanged: (index) {
-          setState(() {
-            currentPage = index;
-          });
-        },
         itemBuilder: (context, index) {
+          final currentReelUrl = widget.reels[index];
           return Stack(
             children: [
-              // Video player occupies the full screen
               Positioned.fill(
                 child: VideoPlayerWidget(
-                  key: Key(widget.reels[index]),
-                  reelUrl: widget.reels[index],
+                  key: Key(currentReelUrl),
+                  reelUrl: currentReelUrl,
                 ),
               ),
-              // Positioned FloatingActionButton over the video
               Positioned(
                 bottom: 20,
                 right: 20,
                 child: FloatingActionButton(
                   onPressed: () {
-                    // Navigate to FoodListScreen when icon is pressed
+                    List<ProductItem> productsForReel = [];
+                    if (index < productsByReel.length) {
+                      productsForReel = productsByReel[index];
+                    }
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const FoodListScreen(),
+                        builder: (context) => ProductListScreen(productItems: productsForReel),
                       ),
                     );
                   },
