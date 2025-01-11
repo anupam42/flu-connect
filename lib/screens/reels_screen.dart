@@ -1,8 +1,6 @@
-import 'package:connect/models/product.dart';
-import 'package:connect/models/reels.dart';
 import 'package:connect/screens/product_listing_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:connect/widgets/video_player.dart'; 
+import 'package:connect/widgets/video_player.dart';
 
 class VideoReelPage extends StatefulWidget {
   const VideoReelPage({super.key, required this.reels, required this.index});
@@ -15,6 +13,16 @@ class VideoReelPage extends StatefulWidget {
 
 class _VideoReelPageState extends State<VideoReelPage> {
   late PageController _pageController;
+
+  // Map reel indexes to categories
+  final Map<int, String> reelCategories = {
+    0: 'Food',
+    1: 'Household',
+    2: 'Appliances',
+    3: 'Groceries',
+    4: 'Electronics',
+    5: 'Clothing',
+  };
 
   @override
   void initState() {
@@ -29,14 +37,12 @@ class _VideoReelPageState extends State<VideoReelPage> {
   }
 
   void _onFavoritePressed() {
-    // Implement favorite functionality here
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Favorited!')),
     );
   }
 
   void _onSharePressed() {
-    // Implement share functionality here
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Share action triggered!')),
     );
@@ -60,9 +66,8 @@ class _VideoReelPageState extends State<VideoReelPage> {
                   reelUrl: currentReelUrl,
                 ),
               ),
-              // Favorite Icon Positioned
               Positioned(
-                bottom: 100, // adjust based on layout preferences
+                bottom: 100,
                 right: 20,
                 child: IconButton(
                   icon: const Icon(
@@ -73,9 +78,8 @@ class _VideoReelPageState extends State<VideoReelPage> {
                   onPressed: _onFavoritePressed,
                 ),
               ),
-              // Share Icon Positioned
               Positioned(
-                bottom: 150, // adjust based on layout preferences
+                bottom: 150,
                 right: 20,
                 child: IconButton(
                   icon: const Icon(
@@ -86,19 +90,16 @@ class _VideoReelPageState extends State<VideoReelPage> {
                   onPressed: _onSharePressed,
                 ),
               ),
-              // Existing Shopping Bag FloatingActionButton
               Positioned(
                 bottom: 20,
                 right: 20,
                 child: FloatingActionButton(
                   onPressed: () {
-                    List<ProductItem> productsForReel = [];
-                    if (index < productsByReel.length) {
-                      productsForReel = productsByReel[index];
-                    }
+                    // Use the mapped category based on reel index or default to 'Food'
+                    final category = reelCategories[index] ?? 'Food';
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => ProductListScreen(productItems: productsForReel),
+                        builder: (context) => ProductListScreen(category: category),
                       ),
                     );
                   },
