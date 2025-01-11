@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'constant.dart';
 
 class PixabayService {
-  static const String _apiKey = '48170540-4993f6d4356e871739dc3b7c6';
   static const String _baseUrl = "https://pixabay.com/api/";
 
   static Future<List<String>> fetchImageUrls(String query, {int count = 10}) async {
     final url = Uri.parse(
-      "$_baseUrl?key=$_apiKey&q=${Uri.encodeComponent(query)}&image_type=photo&per_page=$count"
+      "$_baseUrl?key=$API_KEY&q=${Uri.encodeComponent(query)}&image_type=photo&per_page=$count"
     );
 
     final response = await http.get(url);
