@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect/screens/edit_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../resources/auth_methods.dart';
 import '../resources/firestore_methods.dart';
 import '../screens/login_screen.dart';
 import '../utils/colors.dart';
@@ -25,207 +24,173 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Map<String, dynamic> userData = {};
   int postLen = 0;
   int followers = 0;
   int following = 0;
   bool isFollowing = false;
-  bool isLoading = true;
+
+  // Helper: Create a stream for user document
+  Stream<DocumentSnapshot<Map<String, dynamic>>> userStream() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.uid)
+        .snapshots();
+  }
+
+  // Fetch post length separately since posts are not streamed here
+  Future<void> updatePostLen() async {
+    final postSnap = await FirebaseFirestore.instance
+        .collection('posts')
+        .where('uid', isEqualTo: widget.uid)
+        .get();
+    setState(() {
+      postLen = postSnap.docs.length;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    getData();
-  }
-
-  Future<void> getData() async {
-    try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.uid)
-          .get();
-
-      if (!userDoc.exists || userDoc.data() == null) {
-        showSnackBar('User not found. Logging out...', context);
-        await AuthMethods().signOut();
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            PageAnimation.createRoute(
-              page: const LoginScreen(),
-              beginOffset1: 0.0,
-              beginOffset2: 1.0,
-            ),
-          );
-        }
-        setState(() {
-          isLoading = false;
-        });
-        return;
-      }
-
-      final data = userDoc.data()!;
-      userData = {
-        'uid': data['uid'] ?? '',
-        'username': data['username'] ?? '',
-        'photourl': data['photourl'],
-        'bio': data['bio'] ?? '',
-        'followers': data['followers'] ?? <dynamic>[],
-        'following': data['following'] ?? <dynamic>[],
-      };
-
-      final postSnap = await FirebaseFirestore.instance
-          .collection('posts')
-          .where('uid', isEqualTo: widget.uid)
-          .get();
-      postLen = postSnap.docs.length;
-
-      final followersList = (userData['followers'] is List)
-          ? (userData['followers'] as List)
-          : <dynamic>[];
-      final followingList = (userData['following'] is List)
-          ? (userData['following'] as List)
-          : <dynamic>[];
-
-      followers = followersList.length;
-      following = followingList.length;
-      isFollowing = followersList.contains(
-        FirebaseAuth.instance.currentUser?.uid,
-      );
-    } catch (e) {
-      showSnackBar(e.toString(), context);
-    }
-
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    // Initialize post count once. Posts updates can also be streamed similarly if needed.
+    updatePostLen();
   }
 
   @override
   Widget build(BuildContext context) {
-    // If still loading, show a progress indicator.
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: userStream(),
+      builder: (context, snapshot) {
+        // Loading or error handling
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || !snapshot.data!.exists) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: mobileBackgroundColor,
+              title: const Text('Profile'),
+            ),
+            body: const Center(child: Text('No user data found.')),
+          );
+        }
 
-    // If we've loaded but have no data for some reason, show a message.
-    if (userData.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: mobileBackgroundColor,
-          title: const Text('Profile'),
-        ),
-        body: const Center(
-          child: Text('No user data found.'),
-        ),
-      );
-    }
+        // Extract user data from snapshot
+        final data = snapshot.data!.data()!;
+        final Map<String, dynamic> userData = {
+          'uid': data['uid'] ?? '',
+          'username': data['username'] ?? '',
+          'photourl': data['photourl'],
+          'bio': data['bio'] ?? '',
+          'followers': data['followers'] ?? <dynamic>[],
+          'following': data['following'] ?? <dynamic>[],
+        };
 
-    // Wrap everything in a DefaultTabController for the 2 tabs.
-    return DefaultTabController(
-      length: 2, // We have 2 tabs: Posts and Cart
-      initialIndex: widget.initialTabIndex,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: mobileBackgroundColor,
-          title: Text(
-            userData['username'] ?? '',
-            style: GoogleFonts.meowScript(
-              textStyle: Theme.of(context).textTheme.displayLarge,
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
+        // Update follower/following count and state
+        final followersList = (userData['followers'] is List)
+            ? userData['followers'] as List
+            : <dynamic>[];
+        final followingList = (userData['following'] is List)
+            ? userData['following'] as List
+            : <dynamic>[];
+
+        followers = followersList.length;
+        following = followingList.length;
+        isFollowing =
+            followersList.contains(FirebaseAuth.instance.currentUser?.uid);
+
+        return DefaultTabController(
+          length: 2,
+          initialIndex: widget.initialTabIndex,
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: mobileBackgroundColor,
+              title: Text(
+                userData['username'] ?? '',
+                style: GoogleFonts.meowScript(
+                  textStyle: Theme.of(context).textTheme.displayLarge,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              centerTitle: false,
+            ),
+            body: Column(
+              children: [
+                _buildProfileHeader(userData),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('carts')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('items')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    int cartCount = 0;
+                    if (snapshot.hasData) {
+                      cartCount = snapshot.data!.docs.length;
+                    }
+
+                    return TabBar(
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: Colors.white,
+                      tabs: [
+                        const Tab(
+                          icon: Icon(Icons.grid_on),
+                          text: 'Posts',
+                        ),
+                        Tab(
+                          icon: Stack(
+                            children: [
+                              const Icon(Icons.shopping_cart),
+                              if (cartCount > 0)
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2.0),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 16,
+                                      minHeight: 16,
+                                    ),
+                                    child: Text(
+                                      '$cartCount',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          text: 'Cart',
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildPostsGrid(),
+                      _buildCartTab(),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          centerTitle: false,
-        ),
-        body: Column(
-          children: [
-            // 1) The user’s profile header (avatar, stats, follow button, bio)
-            _buildProfileHeader(),
-
-            // 2) The TabBar wrapped in a StreamBuilder to show cart count
-            StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('carts')
-                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                  .collection('items')
-                  .snapshots(),
-              builder: (context, snapshot) {
-                int cartCount = 0;
-                if (snapshot.hasData) {
-                  cartCount = snapshot.data!.docs.length;
-                }
-
-                return TabBar(
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: Colors.white,
-                  tabs: [
-                    const Tab(
-                      icon: Icon(Icons.grid_on),
-                      text: 'Posts',
-                    ),
-                    Tab(
-                      icon: Stack(
-                        children: [
-                          const Icon(Icons.shopping_cart),
-                          // Show the badge only if there's at least 1 item
-                          if (cartCount > 0)
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(2.0),
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                                constraints: const BoxConstraints(
-                                  minWidth: 16,
-                                  minHeight: 16,
-                                ),
-                                child: Text(
-                                  '$cartCount',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                      text: 'Cart',
-                    ),
-                  ],
-                );
-              },
-            ),
-
-            // 3) The TabBarView for each tab
-            Expanded(
-              child: TabBarView(
-                children: [
-                  // A) Posts tab
-                  _buildPostsGrid(),
-
-                  // B) Cart tab
-                  _buildCartTab(),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 
-  /// User's profile header with avatar, stats, follow button, etc.
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(Map<String, dynamic> userData) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -245,7 +210,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 flex: 1,
                 child: Column(
                   children: [
-                    // Posts / Followers / Following
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -255,31 +219,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         buildStatColumn(following, "Following"),
                       ],
                     ),
-                    // Follow Button or Sign Out Button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         if (FirebaseAuth.instance.currentUser?.uid ==
                             widget.uid)
-                          // If the logged-in user is viewing their own profile:
                           FollowButton(
                             backgroundColor: mobileBackgroundColor,
                             borderColor: Colors.grey,
-                            text: 'Sign Out',
+                            text: 'Edit Profile',
                             textColor: primaryColor,
-                            function: () async {
-                              Navigator.of(context).pushReplacement(
+                            function: () {
+                              Navigator.of(context)
+                                  .push(
                                 PageAnimation.createRoute(
-                                  page: const LoginScreen(),
+                                  page: EditProfileScreen(userData: userData),
                                   beginOffset1: 0.0,
                                   beginOffset2: 1.0,
                                 ),
-                              );
-                              await AuthMethods().signOut();
+                              )
+                                  .then((result) {
+                                if (result == true) {
+                                  showSnackBar(
+                                      'Profile updated successfully!', context);
+                                  // No need to call getData() due to StreamBuilder
+                                  updatePostLen(); // Refresh posts count in case posts changed
+                                }
+                              });
                             },
                           )
                         else
-                          // If viewing someone else's profile:
                           isFollowing
                               ? FollowButton(
                                   backgroundColor: Colors.white,
@@ -291,12 +260,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       FirebaseAuth.instance.currentUser!.uid,
                                       userData['uid'],
                                     );
-                                    if (mounted) {
-                                      setState(() {
-                                        isFollowing = false;
-                                        followers--;
-                                      });
-                                    }
+                                    setState(() {
+                                      isFollowing = false;
+                                      followers--;
+                                    });
                                   },
                                 )
                               : FollowButton(
@@ -309,12 +276,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       FirebaseAuth.instance.currentUser!.uid,
                                       userData['uid'],
                                     );
-                                    if (mounted) {
-                                      setState(() {
-                                        isFollowing = true;
-                                        followers++;
-                                      });
-                                    }
+                                    setState(() {
+                                      isFollowing = true;
+                                      followers++;
+                                    });
                                   },
                                 ),
                       ],
@@ -324,7 +289,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          // Username
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 15),
@@ -335,7 +299,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-          // Bio
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 1),
