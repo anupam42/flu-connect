@@ -29,7 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int following = 0;
   bool isFollowing = false;
 
-  // Helper: Create a stream for user document
   Stream<DocumentSnapshot<Map<String, dynamic>>> userStream() {
     return FirebaseFirestore.instance
         .collection('users')
@@ -37,7 +36,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .snapshots();
   }
 
-  // Fetch post length separately since posts are not streamed here
   Future<void> updatePostLen() async {
     final postSnap = await FirebaseFirestore.instance
         .collection('posts')
@@ -51,7 +49,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize post count once. Posts updates can also be streamed similarly if needed.
     updatePostLen();
   }
 
@@ -60,7 +57,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: userStream(),
       builder: (context, snapshot) {
-        // Loading or error handling
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -74,7 +70,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         }
 
-        // Extract user data from snapshot
         final data = snapshot.data!.data()!;
         final Map<String, dynamic> userData = {
           'uid': data['uid'] ?? '',
@@ -85,7 +80,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'following': data['following'] ?? <dynamic>[],
         };
 
-        // Update follower/following count and state
         final followersList = (userData['followers'] is List)
             ? userData['followers'] as List
             : <dynamic>[];
@@ -98,134 +92,129 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isFollowing =
             followersList.contains(FirebaseAuth.instance.currentUser?.uid);
 
-        return FutureBuilder<QuerySnapshot>(
-          future: FirebaseFirestore.instance
-              .collection('posts')
-              .where('uid', isEqualTo: widget.uid)
-              .get(),
-          builder: (context, postSnapshot) {
-            int postsCount = 0;
-            if (postSnapshot.hasData) {
-              postsCount = postSnapshot.data!.docs.length;
-            }
-            return DefaultTabController(
-              length: 2,
-              initialIndex: widget.initialTabIndex,
-              child: Scaffold(
-                appBar: AppBar(
-                  backgroundColor: mobileBackgroundColor,
-                  title: Text(
-                    userData['username'] ?? '',
-                    style: GoogleFonts.meowScript(
-                      textStyle: Theme.of(context).textTheme.displayLarge,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  centerTitle: false,
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.notifications),
-                      onPressed: () {
-                        // Favorite button action
-                        showSnackBar('Favorite icon pressed!', context);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.message),
-                      onPressed: () {
-                        // Message button action
-                        showSnackBar('Message icon pressed!', context);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.settings),
-                      onPressed: () {
-                        // Navigate to Edit Profile screen
-                        Navigator.of(context).push(
-                          PageAnimation.createRoute(
-                            page: const SettingsScreen(),
-                            beginOffset1: 0.0,
-                            beginOffset2: 1.0,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                body: Column(
-                  children: [
-                    _buildProfileHeader(userData),
-                    StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('carts')
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .collection('items')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        int cartCount = 0;
-                        if (snapshot.hasData) {
-                          cartCount = snapshot.data!.docs.length;
-                        }
-
-                        return TabBar(
-                          labelColor: Colors.white,
-                          unselectedLabelColor: Colors.grey,
-                          indicatorColor: Colors.white,
-                          tabs: [
-                            Tab(
-                              icon: const Icon(Icons.grid_on),
-                              text: 'Posts ($postsCount)',
-                            ),
-                            Tab(
-                              icon: Stack(
-                                children: [
-                                  const Icon(Icons.shopping_cart),
-                                  if (cartCount > 0)
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(2.0),
-                                        decoration: const BoxDecoration(
-                                          color: Colors.red,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        constraints: const BoxConstraints(
-                                          minWidth: 16,
-                                          minHeight: 16,
-                                        ),
-                                        child: Text(
-                                          '$cartCount',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 10,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              text: 'Cart',
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          _buildPostsGrid(),
-                          _buildCartTab(),
-                        ],
-                      ),
-                    ),
-                  ],
+        return DefaultTabController(
+          length: 4,
+          initialIndex: widget.initialTabIndex,
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: mobileBackgroundColor,
+              title: Text(
+                userData['username'] ?? '',
+                style: GoogleFonts.meowScript(
+                  textStyle: Theme.of(context).textTheme.displayLarge,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-            );
-          },
+              centerTitle: false,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.notifications),
+                  onPressed: () {
+                    showSnackBar('Favorite icon pressed!', context);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.message),
+                  onPressed: () {
+                    showSnackBar('Message icon pressed!', context);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      PageAnimation.createRoute(
+                        page: const SettingsScreen(),
+                        beginOffset1: 0.0,
+                        beginOffset2: 1.0,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            body: Column(
+              children: [
+                _buildProfileHeader(userData),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('carts')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('items')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    int cartCount = 0;
+                    if (snapshot.hasData) {
+                      cartCount = snapshot.data!.docs.length;
+                    }
+
+                    return TabBar(
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: Colors.white,
+                      tabs: [
+                        Tab(
+                          icon: const Icon(Icons.grid_on),
+                          text: 'Posts ($postLen)',
+                        ),
+                        Tab(
+                          icon: const Icon(Icons.video_library),
+                          text: 'Videos',
+                        ),
+                        Tab(
+                          icon: const Icon(Icons.shopping_bag),
+                          text: 'Products',
+                        ),
+                        Tab(
+                          icon: Stack(
+                            children: [
+                              const Icon(Icons.shopping_cart),
+                              if (cartCount > 0)
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2.0),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 16,
+                                      minHeight: 16,
+                                    ),
+                                    child: Text(
+                                      '$cartCount',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          text: 'Cart',
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildPostsGrid(),
+                      _buildVideosTab(),
+                      _buildProductsTab(),
+                      _buildCartTab(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -238,7 +227,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Row(
             children: [
-              // Profile Picture
               CircleAvatar(
                 backgroundColor: Colors.grey,
                 backgroundImage: (userData['photourl'] != null &&
@@ -360,9 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (!snapshot.hasData ||
-            snapshot.data == null ||
-            snapshot.data!.docs.isEmpty) {
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No posts yet.'));
         }
         final docs = snapshot.data!.docs;
@@ -395,6 +381,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildVideosTab() {
+    return FutureBuilder<QuerySnapshot>(
+      future: FirebaseFirestore.instance
+          .collection('videos')
+          .where('uid', isEqualTo: widget.uid)
+          .get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No videos yet.'));
+        }
+        final docs = snapshot.data!.docs;
+        return GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
+            childAspectRatio: 1.5,
+          ),
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final snap = docs[index];
+            final videoThumbnail = snap['thumbnail'] ?? '';
+            return GestureDetector(
+              onTap: () {
+                // Add functionality to play video
+              },
+              child: Image(
+                image: NetworkImage(videoThumbnail),
+                fit: BoxFit.cover,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildProductsTab() {
+    return FutureBuilder<QuerySnapshot>(
+      future: FirebaseFirestore.instance
+          .collection('products')
+          .where('uid', isEqualTo: widget.uid)
+          .get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No products yet.'));
+        }
+        final docs = snapshot.data!.docs;
+        return ListView.builder(
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final docData = docs[index].data() as Map<String, dynamic>;
+            final productName = docData['name'] ?? 'No name';
+            final productPrice = docData['price'] ?? 0.0;
+            return ListTile(
+              leading: (docData['image'] != null)
+                  ? Image.network(docData['image'], width: 50, fit: BoxFit.cover)
+                  : const Icon(Icons.shopping_bag),
+              title: Text(productName),
+              subtitle: Text('\$${productPrice.toStringAsFixed(2)}'),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildCartTab() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     return StreamBuilder<QuerySnapshot>(
@@ -407,9 +466,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (!snapshot.hasData ||
-            snapshot.data == null ||
-            snapshot.data!.docs.isEmpty) {
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No items in cart.'));
         }
         final docs = snapshot.data!.docs;
@@ -461,7 +518,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SnackBar(content: Text('Cart cleared!')),
       );
     }
-    // Optional: Add animation or confetti effect here
   }
 
   Column buildStatColumn(int num, String label) {
