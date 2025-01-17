@@ -48,6 +48,12 @@ class _VideoReelPageState extends State<VideoReelPage> {
     );
   }
 
+  void _onCommentPressed() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Comment action triggered!')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,72 +66,116 @@ class _VideoReelPageState extends State<VideoReelPage> {
           final currentReelUrl = widget.reels[index];
           return Stack(
             children: [
+              // Video Player
               Positioned.fill(
                 child: VideoPlayerWidget(
                   key: Key(currentReelUrl),
                   reelUrl: currentReelUrl,
                 ),
               ),
+              // User info at the very bottom
+              Positioned(
+                bottom: 20, // Some spacing from the bottom edge
+                left: 20,
+                right: 20,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundImage: NetworkImage(
+                            'https://via.placeholder.com/150', // Replace with actual profile photo URL
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'UserName', // Replace with dynamic user name
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Connect request sent!')),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                      ),
+                      child: const Text('Connect'),
+                    ),
+                  ],
+                ),
+              ),
+              // Bottom action buttons
               Positioned(
                 bottom: 100,
                 right: 20,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.favorite_border,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onPressed: _onFavoritePressed,
-                ),
-              ),
-              Positioned(
-                bottom: 180,
-                right: 20,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.shopping_bag_rounded,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    final category = reelCategories[index] ?? 'Food';
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ProductListScreen(category: category),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // Favorite
+                    IconButton(
+                      icon: const Icon(
+                        Icons.favorite_border,
+                        color: Colors.white,
+                        size: 30,
                       ),
-                    );
-                  },
+                      onPressed: _onFavoritePressed,
+                    ),
+                    const SizedBox(height: 20),
+                    // Product
+                    IconButton(
+                      icon: const Icon(
+                        Icons.shopping_bag_rounded,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      onPressed: () {
+                        final category = reelCategories[index] ?? 'Food';
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProductListScreen(category: category),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    // Comment
+                    IconButton(
+                      icon: const Icon(
+                        Icons.comment,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      onPressed: _onCommentPressed,
+                    ),
+                    const SizedBox(height: 20),
+                    // Share
+                    IconButton(
+                      icon: const Icon(
+                        Icons.share,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      onPressed: _onSharePressed,
+                    ),
+                  ],
                 ),
               ),
-              Positioned(
-                bottom: 240,
-                right: 20,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.share,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onPressed: _onSharePressed,
-                ),
-              ),
-              // Positioned(
-              //   bottom: 20,
-              //   right: 20,
-              //   child: FloatingActionButton(
-              //     onPressed: () {
-              //       // Use the mapped category based on reel index or default to 'Food'
-              //       final category = reelCategories[index] ?? 'Food';
-              //       Navigator.of(context).push(
-              //         MaterialPageRoute(
-              //           builder: (context) => ProductListScreen(category: category),
-              //         ),
-              //       );
-              //     },
-              //     child: const Icon(Icons.shopping_bag_rounded),
-              //   ),
-              // ),
             ],
           );
         },
