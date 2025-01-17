@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../resources/firestore_methods.dart';
-import '../screens/login_screen.dart';
 import '../utils/colors.dart';
 import '../utils/utils.dart';
 import '../widgets/follow_button.dart';
@@ -98,93 +97,105 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isFollowing =
             followersList.contains(FirebaseAuth.instance.currentUser?.uid);
 
-        return DefaultTabController(
-          length: 2,
-          initialIndex: widget.initialTabIndex,
-          child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: mobileBackgroundColor,
-              title: Text(
-                userData['username'] ?? '',
-                style: GoogleFonts.meowScript(
-                  textStyle: Theme.of(context).textTheme.displayLarge,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
+        return FutureBuilder<QuerySnapshot>(
+          future: FirebaseFirestore.instance
+              .collection('posts')
+              .where('uid', isEqualTo: widget.uid)
+              .get(),
+          builder: (context, postSnapshot) {
+            int postsCount = 0;
+            if (postSnapshot.hasData) {
+              postsCount = postSnapshot.data!.docs.length;
+            }
+            return DefaultTabController(
+              length: 2,
+              initialIndex: widget.initialTabIndex,
+              child: Scaffold(
+                appBar: AppBar(
+                  backgroundColor: mobileBackgroundColor,
+                  title: Text(
+                    userData['username'] ?? '',
+                    style: GoogleFonts.meowScript(
+                      textStyle: Theme.of(context).textTheme.displayLarge,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  centerTitle: false,
+                ),
+                body: Column(
+                  children: [
+                    _buildProfileHeader(userData),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('carts')
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .collection('items')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        int cartCount = 0;
+                        if (snapshot.hasData) {
+                          cartCount = snapshot.data!.docs.length;
+                        }
+
+                        return TabBar(
+                          labelColor: Colors.white,
+                          unselectedLabelColor: Colors.grey,
+                          indicatorColor: Colors.white,
+                          tabs: [
+                            Tab(
+                              icon: const Icon(Icons.grid_on),
+                              text: 'Posts ($postsCount)',
+                            ),
+                            Tab(
+                              icon: Stack(
+                                children: [
+                                  const Icon(Icons.shopping_cart),
+                                  if (cartCount > 0)
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2.0),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 16,
+                                          minHeight: 16,
+                                        ),
+                                        child: Text(
+                                          '$cartCount',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              text: 'Cart',
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          _buildPostsGrid(),
+                          _buildCartTab(),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              centerTitle: false,
-            ),
-            body: Column(
-              children: [
-                _buildProfileHeader(userData),
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('carts')
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .collection('items')
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    int cartCount = 0;
-                    if (snapshot.hasData) {
-                      cartCount = snapshot.data!.docs.length;
-                    }
-
-                    return TabBar(
-                      labelColor: Colors.white,
-                      unselectedLabelColor: Colors.grey,
-                      indicatorColor: Colors.white,
-                      tabs: [
-                        const Tab(
-                          icon: Icon(Icons.grid_on),
-                          text: 'Posts',
-                        ),
-                        Tab(
-                          icon: Stack(
-                            children: [
-                              const Icon(Icons.shopping_cart),
-                              if (cartCount > 0)
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2.0),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    constraints: const BoxConstraints(
-                                      minWidth: 16,
-                                      minHeight: 16,
-                                    ),
-                                    child: Text(
-                                      '$cartCount',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          text: 'Cart',
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      _buildPostsGrid(),
-                      _buildCartTab(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+            );
+          },
         );
       },
     );
@@ -214,7 +225,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        buildStatColumn(postLen, "Posts"),
                         buildStatColumn(followers, "Followers"),
                         buildStatColumn(following, "Following"),
                       ],
@@ -222,8 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        if (FirebaseAuth.instance.currentUser?.uid ==
-                            widget.uid)
+                        if (FirebaseAuth.instance.currentUser?.uid == widget.uid)
                           FollowButton(
                             backgroundColor: mobileBackgroundColor,
                             borderColor: Colors.grey,
@@ -232,56 +241,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             function: () {
                               Navigator.of(context)
                                   .push(
-                                PageAnimation.createRoute(
-                                  page: EditProfileScreen(userData: userData),
-                                  beginOffset1: 0.0,
-                                  beginOffset2: 1.0,
-                                ),
-                              )
+                                    PageAnimation.createRoute(
+                                      page: EditProfileScreen(userData: userData),
+                                      beginOffset1: 0.0,
+                                      beginOffset2: 1.0,
+                                    ),
+                                  )
                                   .then((result) {
                                 if (result == true) {
                                   showSnackBar(
                                       'Profile updated successfully!', context);
-                                  // No need to call getData() due to StreamBuilder
-                                  updatePostLen(); // Refresh posts count in case posts changed
+                                  updatePostLen();
                                 }
                               });
                             },
                           )
+                        else if (isFollowing)
+                          FollowButton(
+                            backgroundColor: Colors.white,
+                            borderColor: Colors.grey,
+                            text: 'Unfollow',
+                            textColor: Colors.black,
+                            function: () async {
+                              await FirestoreMethods().followUser(
+                                FirebaseAuth.instance.currentUser!.uid,
+                                userData['uid'],
+                              );
+                              setState(() {
+                                isFollowing = false;
+                                followers--;
+                              });
+                            },
+                          )
                         else
-                          isFollowing
-                              ? FollowButton(
-                                  backgroundColor: Colors.white,
-                                  borderColor: Colors.grey,
-                                  text: 'Unfollow',
-                                  textColor: Colors.black,
-                                  function: () async {
-                                    await FirestoreMethods().followUser(
-                                      FirebaseAuth.instance.currentUser!.uid,
-                                      userData['uid'],
-                                    );
-                                    setState(() {
-                                      isFollowing = false;
-                                      followers--;
-                                    });
-                                  },
-                                )
-                              : FollowButton(
-                                  backgroundColor: Colors.blue,
-                                  borderColor: Colors.blue,
-                                  text: 'Follow',
-                                  textColor: Colors.white,
-                                  function: () async {
-                                    await FirestoreMethods().followUser(
-                                      FirebaseAuth.instance.currentUser!.uid,
-                                      userData['uid'],
-                                    );
-                                    setState(() {
-                                      isFollowing = true;
-                                      followers++;
-                                    });
-                                  },
-                                ),
+                          FollowButton(
+                            backgroundColor: Colors.blue,
+                            borderColor: Colors.blue,
+                            text: 'Follow',
+                            textColor: Colors.white,
+                            function: () async {
+                              await FirestoreMethods().followUser(
+                                FirebaseAuth.instance.currentUser!.uid,
+                                userData['uid'],
+                              );
+                              setState(() {
+                                isFollowing = true;
+                                followers++;
+                              });
+                            },
+                          ),
                       ],
                     ),
                   ],
@@ -311,7 +319,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  /// Posts tab: displays the user's posts in a grid
   Widget _buildPostsGrid() {
     return FutureBuilder<QuerySnapshot>(
       future: FirebaseFirestore.instance
@@ -322,16 +329,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
-        if (!snapshot.hasData || snapshot.data == null) {
+        if (!snapshot.hasData || snapshot.data == null || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No posts yet.'));
         }
-
         final docs = snapshot.data!.docs;
-        if (docs.isEmpty) {
-          return const Center(child: Text('No posts yet.'));
-        }
-
         return GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -345,14 +346,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           itemBuilder: (context, index) {
             final snap = docs[index];
             final postUrl = snap['posturl'] ?? '';
-
             if (postUrl.isEmpty) {
               return Container(
                 color: Colors.grey[300],
                 child: const Center(child: Text('No image')),
               );
             }
-
             return Image(
               image: NetworkImage(postUrl),
               fit: BoxFit.cover,
@@ -363,11 +362,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  /// Cart tab: listens to Firestore for cart items, displays them in a list,
-  /// and includes a "Proceed & Clear Cart" button.
   Widget _buildCartTab() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
-
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('carts')
@@ -378,16 +374,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
-        if (!snapshot.hasData || snapshot.data == null) {
+        if (!snapshot.hasData || snapshot.data == null || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No items in cart.'));
         }
-
         final docs = snapshot.data!.docs;
-        if (docs.isEmpty) {
-          return const Center(child: Text('No items in cart.'));
-        }
-
         return Column(
           children: [
             Expanded(
@@ -400,12 +390,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   final price = (docData['price'] != null)
                       ? docData['price'].toDouble()
                       : 0.0;
-
                   return ListTile(
                     title: Text(name),
-                    subtitle: Text(
-                      'Qty: $quantity   Price: \$${price.toStringAsFixed(2)}',
-                    ),
+                    subtitle: Text('Qty: $quantity   Price: \$${price.toStringAsFixed(2)}'),
                   );
                 },
               ),
@@ -423,31 +410,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  /// Clears all items in the user's cart and displays a success message.
   Future<void> _clearCartWithAnimation() async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final cartRef = FirebaseFirestore.instance
         .collection('carts')
         .doc(uid)
         .collection('items');
-
-    // 1) Delete all items in the cart
     final snapshot = await cartRef.get();
     for (final doc in snapshot.docs) {
       await doc.reference.delete();
     }
-
-    // 2) Show success message
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Cart cleared!')),
       );
     }
-
-    // 3) (Optional) Animate or show confetti here
+    // Optional: Add animation or confetti effect here
   }
 
-  /// Helper method to build a stat column (Posts, Followers, Following).
   Column buildStatColumn(int num, String label) {
     return Column(
       mainAxisSize: MainAxisSize.min,
