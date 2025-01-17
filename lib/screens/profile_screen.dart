@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/screens/edit_profile.dart';
+import 'package:connect/screens/settings_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -122,6 +123,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   centerTitle: false,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.notifications),
+                      onPressed: () {
+                        // Favorite button action
+                        showSnackBar('Favorite icon pressed!', context);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.message),
+                      onPressed: () {
+                        // Message button action
+                        showSnackBar('Message icon pressed!', context);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.settings),
+                      onPressed: () {
+                        // Navigate to Edit Profile screen
+                        Navigator.of(context).push(
+                          PageAnimation.createRoute(
+                            page: const SettingsScreen(),
+                            beginOffset1: 0.0,
+                            beginOffset2: 1.0,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 body: Column(
                   children: [
@@ -232,7 +262,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        if (FirebaseAuth.instance.currentUser?.uid == widget.uid)
+                        if (FirebaseAuth.instance.currentUser?.uid ==
+                            widget.uid)
                           FollowButton(
                             backgroundColor: mobileBackgroundColor,
                             borderColor: Colors.grey,
@@ -241,12 +272,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             function: () {
                               Navigator.of(context)
                                   .push(
-                                    PageAnimation.createRoute(
-                                      page: EditProfileScreen(userData: userData),
-                                      beginOffset1: 0.0,
-                                      beginOffset2: 1.0,
-                                    ),
-                                  )
+                                PageAnimation.createRoute(
+                                  page: EditProfileScreen(userData: userData),
+                                  beginOffset1: 0.0,
+                                  beginOffset2: 1.0,
+                                ),
+                              )
                                   .then((result) {
                                 if (result == true) {
                                   showSnackBar(
@@ -329,7 +360,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (!snapshot.hasData || snapshot.data == null || snapshot.data!.docs.isEmpty) {
+        if (!snapshot.hasData ||
+            snapshot.data == null ||
+            snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No posts yet.'));
         }
         final docs = snapshot.data!.docs;
@@ -374,7 +407,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (!snapshot.hasData || snapshot.data == null || snapshot.data!.docs.isEmpty) {
+        if (!snapshot.hasData ||
+            snapshot.data == null ||
+            snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No items in cart.'));
         }
         final docs = snapshot.data!.docs;
@@ -392,7 +427,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       : 0.0;
                   return ListTile(
                     title: Text(name),
-                    subtitle: Text('Qty: $quantity   Price: \$${price.toStringAsFixed(2)}'),
+                    subtitle: Text(
+                        'Qty: $quantity   Price: \$${price.toStringAsFixed(2)}'),
                   );
                 },
               ),

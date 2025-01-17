@@ -33,21 +33,16 @@ class FeedScreen extends StatelessWidget {
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
                 )),
-                // actions: [
-                //   IconButton(
-                //     onPressed: () {
-                //       Navigator.of(context).push(
-                //         PageAnimation.createRoute(
-                //             page: const ChatScreen(),
-                //             beginOffset1: 1.0,
-                //             beginOffset2: 0.0),
-                //       );
-                //     },
-                //     icon: const Icon(
-                //       Icons.message_outlined,
-                //     ),
-                //   ),
-                // ],
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      
+                    },
+                    icon: const Icon(
+                      Icons.notifications,
+                    ),
+                  ),
+                ],
               ),
         body: RefreshIndicator(
           onRefresh: () async {
