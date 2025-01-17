@@ -79,7 +79,27 @@ class _VideoReelPageState extends State<VideoReelPage> {
                 ),
               ),
               Positioned(
-                bottom: 150,
+                bottom: 180,
+                right: 20,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.shopping_bag_rounded,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    final category = reelCategories[index] ?? 'Food';
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProductListScreen(category: category),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Positioned(
+                bottom: 240,
                 right: 20,
                 child: IconButton(
                   icon: const Icon(
@@ -90,22 +110,22 @@ class _VideoReelPageState extends State<VideoReelPage> {
                   onPressed: _onSharePressed,
                 ),
               ),
-              Positioned(
-                bottom: 20,
-                right: 20,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    // Use the mapped category based on reel index or default to 'Food'
-                    final category = reelCategories[index] ?? 'Food';
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ProductListScreen(category: category),
-                      ),
-                    );
-                  },
-                  child: const Icon(Icons.shopping_bag_rounded),
-                ),
-              ),
+              // Positioned(
+              //   bottom: 20,
+              //   right: 20,
+              //   child: FloatingActionButton(
+              //     onPressed: () {
+              //       // Use the mapped category based on reel index or default to 'Food'
+              //       final category = reelCategories[index] ?? 'Food';
+              //       Navigator.of(context).push(
+              //         MaterialPageRoute(
+              //           builder: (context) => ProductListScreen(category: category),
+              //         ),
+              //       );
+              //     },
+              //     child: const Icon(Icons.shopping_bag_rounded),
+              //   ),
+              // ),
             ],
           );
         },

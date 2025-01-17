@@ -70,7 +70,7 @@ class FeedScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    height: 70,
+                    height: 90,
                     width: double.infinity,
                     child: ListView(
                       shrinkWrap: true,

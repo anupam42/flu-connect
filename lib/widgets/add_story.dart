@@ -26,21 +26,36 @@ class AddStory extends StatelessWidget {
               },
               child: Padding(
                 padding: const EdgeInsets.all(4.5),
-                child: Stack(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircleAvatar(
-                      backgroundColor: secondaryColor,
-                      backgroundImage: NetworkImage(user.photoUrl),
-                      radius: 30,
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: secondaryColor,
+                          backgroundImage: NetworkImage(user.photoUrl),
+                          radius: 30,
+                        ),
+                        const Positioned(
+                          bottom: 4,
+                          right: 0,
+                          child: Icon(
+                            size: 20,
+                            Icons.add_circle_rounded,
+                            color: primaryColor,
+                          ),
+                        ),
+                      ],
                     ),
-                    const Positioned(
-                      bottom: 4,
-                      right: 0,
-                      child: Icon(
-                        size: 20,
-                        Icons.add_circle_rounded,
-                        color: primaryColor,
+                    const SizedBox(height: 4), // Spacing between avatar and text
+                    Text(
+                      user.userName,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.white, // Customize as needed
+                        fontWeight: FontWeight.w500,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
