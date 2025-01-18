@@ -1,6 +1,6 @@
-import 'package:connect/screens/product_listing_screen.dart';
+import 'package:connuect/screens/product_listing_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:connect/widgets/video_player.dart';
+import 'package:connuect/widgets/video_player.dart';
 
 class VideoReelPage extends StatefulWidget {
   const VideoReelPage({super.key, required this.reels, required this.index});

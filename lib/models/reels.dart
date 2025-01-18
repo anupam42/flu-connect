@@ -1,4 +1,4 @@
-import 'package:connect/models/product.dart';
+import 'package:connuect/models/product.dart';
 
 final List<List<ProductItem>> productsByReel = [
   // Products for reel at index 0 (Food items)

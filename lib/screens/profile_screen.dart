@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connect/screens/edit_profile.dart';
-import 'package:connect/screens/settings_screen.dart';
+import 'package:connuect/screens/edit_profile.dart';
+import 'package:connuect/screens/settings_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

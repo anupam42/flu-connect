@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:connect/resources/auth_methods.dart';
+import 'package:connuect/resources/auth_methods.dart';
 
 import '../models/user.dart';
 
