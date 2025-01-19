@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1024426846896",
+    "project_id": "flu-connect-asia",
+    "storage_bucket": "flu-connect-asia.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1024426846896:android:79fa095b77209c2a63a975",
+        "android_client_info": {
+          "package_name": "com.example.insta_clone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAATECEOuCKk080E1w_DHGLa4a9dFfptJc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
