@@ -56,11 +56,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ),
 
                 //svg img
+                //
+                Image.asset(
+                  'assets/connuect.jpeg',
+                  height: 50,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
                 Text(
-                  'Connect',
-                  style: GoogleFonts.meowScript(
+                  'Make Friend, Influence and Earn.',
+                  style: GoogleFonts.aDLaMDisplay(
                     textStyle: Theme.of(context).textTheme.displayLarge,
-                    fontSize: 48,
+                    fontSize: 20,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
