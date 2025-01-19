@@ -28,16 +28,38 @@ class FeedScreen extends StatelessWidget {
                 //   color: primaryColor,
                 //   height: 32,
                 // ),
-                title: Text('Connect', style: GoogleFonts.meowScript(
-                  textStyle: Theme.of(context).textTheme.displayLarge,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                )),
+                title: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                      mainAxisSize:
+                          MainAxisSize.min, // Use min to wrap content tightly
+                      crossAxisAlignment: CrossAxisAlignment
+                          .start, // Center-align children horizontally
+                      children: [
+                        // Replace with your image asset path or network URL
+                        Image.asset(
+                          'assets/connuect.jpeg',
+                          height: 23,
+                        ),
+                        const SizedBox(
+                            height: 8), // Space between image and title
+                        Text(
+                          'Make Friend, Influence and Earn.',
+                          style: GoogleFonts.aDLaMDisplay(
+                            textStyle: Theme.of(context).textTheme.displayLarge,
+                            fontSize: 5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.center, // Center text if needed
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
                 actions: [
                   IconButton(
-                    onPressed: () {
-                      
-                    },
+                    onPressed: () {},
                     icon: const Icon(
                       Icons.notifications,
                     ),

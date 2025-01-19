@@ -49,23 +49,29 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
-
-                // SVG Instagram logo
-                // SvgPicture.asset(
-                //   'assets/insta_logo.svg',
-                //   color: primaryColor,
-                //   height: 60,
-                // ),
-                Text(
-                  'Connect',
-                  style: GoogleFonts.meowScript(
-                    textStyle: Theme.of(context).textTheme.displayLarge,
-                    fontSize: 48,
-                    fontWeight: FontWeight.w700,
-                  )
+                SizedBox(
+                  height: MediaQuery.of(context).size.width > webScreenSize
+                      ? 30
+                      : 200,
                 ),
-                const SizedBox(height: 20),
+                Image.asset(
+                  'assets/connuect.jpeg',
+                  height: 50,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Make Friend, Influence and Earn.',
+                  style: GoogleFonts.aDLaMDisplay(
+                    textStyle: Theme.of(context).textTheme.displayLarge,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
 
                 // circular widget to show our selected image
                 Stack(

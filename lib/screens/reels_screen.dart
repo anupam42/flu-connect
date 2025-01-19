@@ -1,4 +1,6 @@
 import 'package:connuect/screens/product_listing_screen.dart';
+import 'package:connuect/utils/colors.dart';
+import 'package:connuect/widgets/follow_button.dart';
 import 'package:flutter/material.dart';
 import 'package:connuect/widgets/video_player.dart';
 
@@ -73,48 +75,43 @@ class _VideoReelPageState extends State<VideoReelPage> {
                   reelUrl: currentReelUrl,
                 ),
               ),
-              // User info at the very bottom
+              // User info with Connect button beside the username
               Positioned(
                 bottom: 20, // Some spacing from the bottom edge
                 left: 20,
                 right: 20,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundImage: NetworkImage(
-                            'https://via.placeholder.com/150', // Replace with actual profile photo URL
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'UserName', // Replace with dynamic user name
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Connect request sent!')),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundImage: NetworkImage(
+                        'https://via.placeholder.com/150', // Replace with actual profile photo URL
                       ),
-                      child: const Text('Connect'),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'UserName', // Replace with dynamic user name
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 100, // Adjust this value to set the desired width
+                      child: FollowButton(
+                        backgroundColor: Colors.transparent,
+                        borderColor: Colors.grey,
+                        text: 'Connect',
+                        textColor: primaryColor,
+                        function: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Connect request sent!')),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
