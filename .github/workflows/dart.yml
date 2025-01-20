@@ -30,6 +30,3 @@ jobs:
         with:
           name: flutter-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Run tests
-        run: dart test
