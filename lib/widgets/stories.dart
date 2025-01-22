@@ -95,13 +95,22 @@ class Stories extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 3,
-                            ),
-                          ),
+                          decoration: dummyConnectStories.isEmpty
+                              ? BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                    width: 3,
+                                  ),
+                                )
+                              : BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color.fromARGB(
+                                        255, 237, 101, 232),
+                                    width: 3,
+                                  ),
+                                ),
                           child: CircleAvatar(
                             backgroundColor: Colors.grey.shade300,
                             radius: 35,
