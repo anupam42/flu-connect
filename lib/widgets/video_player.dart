@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import '../config/cache_config.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final String reelUrl;
@@ -18,6 +16,8 @@ class VideoPlayerWidget extends StatefulWidget {
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
     with WidgetsBindingObserver {
   late VideoPlayerController _controller;
+  bool _videoInitialized = false;
+  bool _isPlaying = false;
 
   @override
   void initState() {
@@ -26,60 +26,46 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
     initializeController();
   }
 
-  bool _videoInitialized = false;
-
-  initializeController() async {
-    var fileInfo = await kCacheManager.getFileFromCache(widget.reelUrl);
-    if (fileInfo == null) {
-      await kCacheManager.downloadFile(widget.reelUrl);
-      fileInfo = await kCacheManager.getFileFromCache(widget.reelUrl);
-    }
-    if (mounted) {
-      _controller = VideoPlayerController.file(fileInfo!.file)
-        ..initialize().then((_) {
-          setState(() {
-            _controller.setLooping(true); // Set video to loop
-            _controller.play();
-            _videoInitialized = true;
-          });
+  void initializeController() {
+    _controller = VideoPlayerController.asset(widget.reelUrl)
+      ..initialize().then((_) {
+        setState(() {
+          _controller.setLooping(true); // Loop the video
+          _controller.play();            // Start playing
+          _videoInitialized = true;
+          _isPlaying = true;
         });
-      _controller.addListener(() {
-        if (_controller.value.isPlaying && !_isPlaying) {
-          // Video has started playing
-          setState(() {
-            _isPlaying = true;
-          });
-        }
       });
-    }
-  }
 
-  bool _isPlaying = false;
+    _controller.addListener(() {
+      // Update _isPlaying flag based on controller's state
+      if (_controller.value.isPlaying && !_isPlaying) {
+        setState(() {
+          _isPlaying = true;
+        });
+      }
+    });
+  }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    if (!_videoInitialized) return;
     if (state == AppLifecycleState.resumed) {
-      // App is in the foreground
       _controller.play();
-    } else if (state == AppLifecycleState.inactive) {
-      // App is partially obscured
-      _controller.pause();
-    } else if (state == AppLifecycleState.paused) {
-      // App is in the background
+    } else if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
       _controller.pause();
     } else if (state == AppLifecycleState.detached) {
-      // App is terminated
       _controller.dispose();
     }
   }
 
   @override
   void dispose() {
-    log('disposing a controller');
     if (mounted) {
       _controller.dispose();
-    } // Dispose of the controller when done
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -110,21 +96,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
               alignment: AlignmentDirectional.bottomEnd,
               children: [
                 !_videoInitialized
-                    // when the video is not initialized you can set a thumbnail.
-                    // to make it simple, I use CircularProgressIndicator
                     ? const Center(
                         child: CircularProgressIndicator(
                           color: Colors.amber,
                         ),
                       )
                     : VideoPlayer(_controller),
-                !_videoInitialized
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.amber,
-                        ),
-                      )
-                    : const SizedBox(),
                 if (!_isPlaying)
                   const Center(
                     child: Icon(
@@ -133,9 +110,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
                       color: Colors.white,
                     ),
                   ),
-                !_videoInitialized
-                    ? const SizedBox()
-                    : VideoProgressIndicator(
+                _videoInitialized
+                    ? VideoProgressIndicator(
                         _controller,
                         allowScrubbing: true,
                         colors: const VideoProgressColors(
@@ -144,11 +120,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
                           backgroundColor: Colors.white,
                         ),
                       )
+                    : const SizedBox(),
               ],
             ),
           ),
-          // here you can add title, user Info,
-          // description, views count etc.
         ],
       ),
     );
