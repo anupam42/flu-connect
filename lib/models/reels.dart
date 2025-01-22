@@ -16,6 +16,7 @@ final List<List<ProductItem>> productsByReel = [
       name: 'Food Item #${index + 1}',
       price: 5.99 + index,
       category: 'Food',
+      link: '',
       imageUrl: foodImages[index % foodImages.length],
     );
   }),
@@ -36,6 +37,7 @@ final List<List<ProductItem>> productsByReel = [
       name: 'Household Item #${index + 1}',
       price: 15.99 + index,
       category: 'Household',
+      link: '',
       imageUrl: householdImages[index % householdImages.length],
     );
   }),
@@ -54,6 +56,7 @@ final List<List<ProductItem>> productsByReel = [
       name: 'Appliance #${index + 1}',
       price: 99.99 + (index * 20),
       category: 'Appliance',
+      link:'',
       imageUrl: applianceImages[index % applianceImages.length],
     );
   }),
@@ -71,6 +74,7 @@ final List<List<ProductItem>> productsByReel = [
       name: 'Grocery Item #${index + 1}',
       price: 3.49 + index,
       category: 'Groceries',
+      link: '',
       imageUrl: groceryImages[index % groceryImages.length],
     );
   }),
@@ -87,6 +91,7 @@ final List<List<ProductItem>> productsByReel = [
       name: 'Electronic Item #${index + 1}',
       price: 199.99 + (index * 50),
       category: 'Electronics',
+      link: '',
       imageUrl: electronicsImages[index % electronicsImages.length],
     );
   }),
@@ -105,6 +110,7 @@ final List<List<ProductItem>> productsByReel = [
       name: 'Clothing Item #${index + 1}',
       price: 29.99 + (index * 10),
       category: 'Clothing',
+      link: 'https://amzn.in/d/iSpibts',
       imageUrl: clothingImages[index % clothingImages.length],
     );
   }),

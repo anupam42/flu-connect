@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connuect/screens/edit_profile.dart';
+import 'package:connuect/screens/product_listing_screen.dart';
 import 'package:connuect/screens/settings_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -421,37 +422,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Widget _buildProductsTab() {
+  //   return FutureBuilder<QuerySnapshot>(
+  //     future: FirebaseFirestore.instance
+  //         .collection('products')
+  //         .where('uid', isEqualTo: widget.uid)
+  //         .get(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return const Center(child: CircularProgressIndicator());
+  //       }
+  //       if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+  //         return const Center(child: Text('No products yet.'));
+  //       }
+  //       final docs = snapshot.data!.docs;
+  //       return ListView.builder(
+  //         itemCount: docs.length,
+  //         itemBuilder: (context, index) {
+  //           final docData = docs[index].data() as Map<String, dynamic>;
+  //           final productName = docData['name'] ?? 'No name';
+  //           final productPrice = docData['price'] ?? 0.0;
+  //           return ListTile(
+  //             leading: (docData['image'] != null)
+  //                 ? Image.network(docData['image'], width: 50, fit: BoxFit.cover)
+  //                 : const Icon(Icons.shopping_bag),
+  //             title: Text(productName),
+  //             subtitle: Text('\$${productPrice.toStringAsFixed(2)}'),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
   Widget _buildProductsTab() {
-    return FutureBuilder<QuerySnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('products')
-          .where('uid', isEqualTo: widget.uid)
-          .get(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text('No products yet.'));
-        }
-        final docs = snapshot.data!.docs;
-        return ListView.builder(
-          itemCount: docs.length,
-          itemBuilder: (context, index) {
-            final docData = docs[index].data() as Map<String, dynamic>;
-            final productName = docData['name'] ?? 'No name';
-            final productPrice = docData['price'] ?? 0.0;
-            return ListTile(
-              leading: (docData['image'] != null)
-                  ? Image.network(docData['image'], width: 50, fit: BoxFit.cover)
-                  : const Icon(Icons.shopping_bag),
-              title: Text(productName),
-              subtitle: Text('\$${productPrice.toStringAsFixed(2)}'),
-            );
-          },
-        );
-      },
-    );
+    return const ProductListScreen(category: 'Clothing');
   }
 
   Widget _buildCartTab() {

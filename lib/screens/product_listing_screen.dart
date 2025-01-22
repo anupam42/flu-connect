@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connuect/models/product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
 
 class ProductListScreen extends StatefulWidget {
   final String category;
@@ -28,79 +29,103 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Future<List<ProductItem>> _loadProducts() async {
-    // Check the category to return predefined products
     if (widget.category == 'Clothing') {
-      // Predefined products for Video 1
       return [
         ProductItem(
           name: 'Top',
           price: 29.99,
           category: 'Clothing',
-          imageUrl: 'https://m.media-amazon.com/images/I/714g9aJ1dhL._SX679_.jpg',
+          link: 'https://amzn.in/d/iSpibts',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/714g9aJ1dhL._SX679_.jpg',
         ),
         ProductItem(
           name: 'Pant',
           price: 49.99,
           category: 'Clothing',
-          imageUrl: 'https://m.media-amazon.com/images/I/617ShTI4e5L._SY879_.jpg',
+          link: 'https://amzn.in/d/cOuux8P',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/617ShTI4e5L._SY879_.jpg',
         ),
         ProductItem(
           name: 'Head scarf',
           price: 19.99,
           category: 'Clothing',
-          imageUrl: 'https://m.media-amazon.com/images/I/71E0wq5TA-L._SX679_.jpg',
+          link: 'https://amzn.in/d/2HTnlFl',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/71E0wq5TA-L._SX679_.jpg',
         ),
         ProductItem(
           name: 'Shoes',
           price: 89.99,
           category: 'Clothing',
-          imageUrl: 'https://m.media-amazon.com/images/I/51nzsiPwwiL._SY695_.jpg',
+          link: 'https://amzn.in/d/7mlhpQ2',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/51nzsiPwwiL._SY695_.jpg',
         ),
         ProductItem(
           name: 'Hand bag',
           price: 59.99,
           category: 'Clothing',
-          imageUrl: 'https://m.media-amazon.com/images/I/61uMB3+bJjL._SY695_.jpg',
+          link: 'https://amzn.in/d/9Z0oEMT',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/61uMB3+bJjL._SY695_.jpg',
         ),
         ProductItem(
           name: 'Glasses',
           price: 39.99,
           category: 'Clothing',
-          imageUrl: 'https://m.media-amazon.com/images/I/51uNXJVfbeL._SX679_.jpg',
+          link: 'https://amzn.in/d/iKIh8ww',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/51uNXJVfbeL._SX679_.jpg',
         ),
       ];
     } else if (widget.category == 'Food') {
-      // Predefined products for Video 2
       return [
         ProductItem(
           name: 'Hibiscus',
           price: 5.99,
           category: 'Food',
-          imageUrl: 'https://rukminim2.flixcart.com/image/832/832/xif0q/plant-sapling/t/y/r/yes-annual-yes-yellow-hibiscus028-small-1-grow-bag-evergreen-original-imah5s57knskwkdg.jpeg?q=70&crop=false 2x, https://rukminim2.flixcart.com/image/416/416/xif0q/plant-sapling/t/y/r/yes-annual-yes-yellow-hibiscus028-small-1-grow-bag-evergreen-original-imah5s57knskwkdg.jpeg?q=70&crop=false 1x',
+          link: 'https://dl.flipkart.com/s/CHGFf0NNNN',
+          imageUrl:
+              'https://rukminim2.flixcart.com/image/832/832/xif0q/plant-sapling/t/y/r/yes-annual-yes-yellow-hibiscus028-small-1-grow-bag-evergreen-original-imah5s57knskwkdg.jpeg?q=70&crop=false',
         ),
         ProductItem(
           name: 'Curry leaves',
           price: 2.49,
           category: 'Food',
-          imageUrl: 'https://cdn.grofers.com/cdn-cgi/image/f=auto,fit=scale-down,q=70,metadata=none,w=1800/app/images/products/sliding_image/17643a.jpg?ts=1690813684',
+          link: 'https://blinkit.com/prn/x/prid/17643',
+          imageUrl:
+              'https://cdn.grofers.com/cdn-cgi/image/f=auto,fit=scale-down,q=70,metadata=none,w=1800/app/images/products/sliding_image/17643a.jpg?ts=1690813684',
         ),
         ProductItem(
           name: 'Nellikai powder',
           price: 7.99,
           category: 'Food',
-          imageUrl: 'https://m.media-amazon.com/images/I/71mXEhUWMYL._SY879_.jpg',
+          link: 'https://amzn.in/d/bEHk6DM',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/71mXEhUWMYL._SY879_.jpg',
         ),
         ProductItem(
           name: 'Pure chili oil',
           price: 4.99,
           category: 'Food',
-          imageUrl: 'https://m.media-amazon.com/images/I/61ubMhV+GDL._SX679_.jpg',
+          link: 'https://amzn.in/d/6QgsNIjs',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/61ubMhV+GDL._SX679_.jpg',
         ),
       ];
     }
-
-    // If no predefined category matches, return an empty list or handle accordingly.
     return [];
+  }
+
+  Future<void> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not launch $url')),
+      );
+    }
   }
 
   Future<void> _addToCart(ProductItem product) async {
@@ -135,7 +160,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
       }
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Added ${_totalCartItems(products)} items to cart!')),
+      SnackBar(
+          content: Text('Added ${_totalCartItems(products)} items to cart!')),
     );
   }
 
@@ -180,8 +206,31 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                     ),
                     title: Text(product.name),
-                    subtitle: Text(
-                      '\$${product.price.toStringAsFixed(2)} • ${product.category}',
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Display the amount separately
+                        Text(
+                          '\$${product.price.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            color: Colors.white, // or any color you prefer
+                          ),
+                        ),
+                        const SizedBox(
+                            height:
+                                4), // Spacing between the amount and the link
+                        // Display the product link as a separate clickable element
+                        GestureDetector(
+                          onTap: () => _launchURL(product.link),
+                          child: const Text(
+                            'View Product', // or use product.link if you want to show the actual URL text
+                            style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     trailing: SizedBox(
                       width: 120,
