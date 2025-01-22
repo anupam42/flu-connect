@@ -13,13 +13,15 @@ class Stories extends StatelessWidget {
     {
       'uid': 'connect_dummy_1',
       'username': 'Alice',
-      'userimage': 'https://cdn.pixabay.com/photo/2024/08/15/19/19/highland-cow-8972000_1280.jpg',
+      'userimage':
+          'https://cdn.pixabay.com/photo/2024/08/15/19/19/highland-cow-8972000_1280.jpg',
       'storyContent': 'Story content for Alice',
     },
     {
       'uid': 'connect_dummy_2',
       'username': 'Bob',
-      'userimage': 'https://cdn.pixabay.com/photo/2021/10/02/21/00/ural-owl-6676441_1280.jpg',
+      'userimage':
+          'https://cdn.pixabay.com/photo/2021/10/02/21/00/ural-owl-6676441_1280.jpg',
       'storyContent': 'Story content for Bob',
     },
   ];
@@ -92,7 +94,62 @@ class Stories extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Connect',
+                          'Connuect',
+                          style: GoogleFonts.roboto(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageAnimation.createRoute(
+                        page: const StoriesScreen(
+                          username: 'Favorite',
+                          profPic: 'assets/connuect.jpeg',
+                          uid: 'connect',
+                        ),
+                        beginOffset1: 0.0,
+                        beginOffset2: 1.0,
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 3,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            backgroundColor: Colors.grey.shade300,
+                            radius: 35,
+                            child: const ClipOval(
+                              child: Icon(
+                                Icons.favorite,
+                                size: 30,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Favorite',
                           style: GoogleFonts.roboto(
                             color: Colors.white,
                             fontSize: 12,
