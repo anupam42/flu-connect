@@ -226,7 +226,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             'View Product', // or use product.link if you want to show the actual URL text
                             style: TextStyle(
                               color: Colors.blue,
-                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
