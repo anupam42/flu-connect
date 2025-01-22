@@ -39,7 +39,21 @@ class _StoriesScreenState extends State<StoriesScreen> {
   }
 
   void stories() async {
-    try {
+  try {
+    if (widget.stories != null) {
+      // Use dummy stories if provided
+      setState(() {
+        for (var element in widget.stories!) {
+          items.add(StoryItem.pageImage(
+            url: element['storyimg'],
+            controller: controller,
+            imageFit: BoxFit.contain,
+            caption: null,
+          ));
+        }
+      });
+    } else {
+      // Fetch stories from Firestore
       final list = await FirestoreMethods().getStories(widget.uid);
       setState(() {
         for (var element in list) {
@@ -51,10 +65,12 @@ class _StoriesScreenState extends State<StoriesScreen> {
           ));
         }
       });
-    } catch (e) {
-      rethrow;
     }
+  } catch (e) {
+    // Handle errors gracefully
+    rethrow;
   }
+}
 
   @override
   Widget build(BuildContext context) {
