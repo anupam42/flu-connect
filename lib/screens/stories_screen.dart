@@ -88,7 +88,15 @@ class _StoriesScreenState extends State<StoriesScreen> {
         ),
       ),
       body: items.isEmpty
-          ? Container()
+          ? const Center(
+            child: Text(
+              'No stories',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 18,
+              ),
+            ),
+          )
           : StoryView(
               repeat: false,
               inline: true,
