@@ -141,6 +141,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
         'category': product.category,
         'quantity': product.quantity,
         'price': product.price,
+        'imageUrl': product.imageUrl,  // Save imageUrl
+        'link': product.link,          // Save product link
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -209,21 +211,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Display the amount separately
                         Text(
                           '\$${product.price.toStringAsFixed(2)}',
                           style: const TextStyle(
-                            color: Colors.white, // or any color you prefer
+                            color: Colors.white,
                           ),
                         ),
-                        const SizedBox(
-                            height:
-                                4), // Spacing between the amount and the link
-                        // Display the product link as a separate clickable element
+                        const SizedBox(height: 4),
                         GestureDetector(
                           onTap: () => _launchURL(product.link),
                           child: const Text(
-                            'View Product', // or use product.link if you want to show the actual URL text
+                            'View Product',
                             style: TextStyle(
                               color: Colors.blue,
                             ),

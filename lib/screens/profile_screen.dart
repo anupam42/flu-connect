@@ -10,6 +10,7 @@ import '../utils/colors.dart';
 import '../utils/utils.dart';
 import '../widgets/follow_button.dart';
 import '../utils/page_animation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -487,10 +488,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   final price = (docData['price'] != null)
                       ? docData['price'].toDouble()
                       : 0.0;
-                  return ListTile(
-                    title: Text(name),
-                    subtitle: Text(
-                        'Qty: $quantity   Price: \$${price.toStringAsFixed(2)}'),
+                  // Use correct keys from Firestore for image and link
+                  final imageUrl = docData['imageUrl'] as String?;
+                  final productLink = docData['link'] as String?;
+
+                  return Card(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: GestureDetector(
+                      onTap: () async {
+                        // Use updated productLink for launching URL
+                        if (productLink != null &&
+                            await canLaunchUrl(Uri.parse(productLink))) {
+                          await launchUrl(Uri.parse(productLink),
+                              mode: LaunchMode.externalApplication);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Could not launch product link')),
+                          );
+                        }
+                      },
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(8),
+                        leading: (imageUrl != null && imageUrl.isNotEmpty)
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  imageUrl,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.broken_image),
+                                ),
+                              )
+                            : const Icon(Icons.shopping_bag),
+                        title: Text(name),
+                        subtitle: Text(
+                            'Qty: $quantity   Price: \$${price.toStringAsFixed(2)}'),
+                      ),
+                    ),
                   );
                 },
               ),
