@@ -18,12 +18,12 @@ class _VideoReelPageState extends State<VideoReelPage> {
 
   // Map reel indexes to categories
   final Map<int, String> reelCategories = {
-    0: 'Food',
-    1: 'Household',
+    0: 'Clothing',
+    1: 'Food',
     2: 'Appliances',
     3: 'Groceries',
     4: 'Electronics',
-    5: 'Clothing',
+    5: 'Household',
   };
 
   @override

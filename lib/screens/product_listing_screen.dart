@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connuect/api/pixabay_api.dart';
 import 'package:connuect/models/product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,23 +28,79 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Future<List<ProductItem>> _loadProducts() async {
-    // Fetch images for the category from Pixabay
-    final imageUrls = await PixabayService.fetchImageUrls(
-      widget.category.toLowerCase(),
-      count: widget.productCount,
-    );
+    // Check the category to return predefined products
+    if (widget.category == 'Clothing') {
+      // Predefined products for Video 1
+      return [
+        ProductItem(
+          name: 'Top',
+          price: 29.99,
+          category: 'Clothing',
+          imageUrl: 'https://m.media-amazon.com/images/I/714g9aJ1dhL._SX679_.jpg',
+        ),
+        ProductItem(
+          name: 'Pant',
+          price: 49.99,
+          category: 'Clothing',
+          imageUrl: 'https://m.media-amazon.com/images/I/617ShTI4e5L._SY879_.jpg',
+        ),
+        ProductItem(
+          name: 'Head scarf',
+          price: 19.99,
+          category: 'Clothing',
+          imageUrl: 'https://m.media-amazon.com/images/I/71E0wq5TA-L._SX679_.jpg',
+        ),
+        ProductItem(
+          name: 'Shoes',
+          price: 89.99,
+          category: 'Clothing',
+          imageUrl: 'https://m.media-amazon.com/images/I/51nzsiPwwiL._SY695_.jpg',
+        ),
+        ProductItem(
+          name: 'Hand bag',
+          price: 59.99,
+          category: 'Clothing',
+          imageUrl: 'https://m.media-amazon.com/images/I/61uMB3+bJjL._SY695_.jpg',
+        ),
+        ProductItem(
+          name: 'Glasses',
+          price: 39.99,
+          category: 'Clothing',
+          imageUrl: 'https://m.media-amazon.com/images/I/51uNXJVfbeL._SX679_.jpg',
+        ),
+      ];
+    } else if (widget.category == 'Food') {
+      // Predefined products for Video 2
+      return [
+        ProductItem(
+          name: 'Hibiscus',
+          price: 5.99,
+          category: 'Food',
+          imageUrl: 'https://rukminim2.flixcart.com/image/832/832/xif0q/plant-sapling/t/y/r/yes-annual-yes-yellow-hibiscus028-small-1-grow-bag-evergreen-original-imah5s57knskwkdg.jpeg?q=70&crop=false 2x, https://rukminim2.flixcart.com/image/416/416/xif0q/plant-sapling/t/y/r/yes-annual-yes-yellow-hibiscus028-small-1-grow-bag-evergreen-original-imah5s57knskwkdg.jpeg?q=70&crop=false 1x',
+        ),
+        ProductItem(
+          name: 'Curry leaves',
+          price: 2.49,
+          category: 'Food',
+          imageUrl: 'https://cdn.grofers.com/cdn-cgi/image/f=auto,fit=scale-down,q=70,metadata=none,w=1800/app/images/products/sliding_image/17643a.jpg?ts=1690813684',
+        ),
+        ProductItem(
+          name: 'Nellikai powder',
+          price: 7.99,
+          category: 'Food',
+          imageUrl: 'https://m.media-amazon.com/images/I/71mXEhUWMYL._SY879_.jpg',
+        ),
+        ProductItem(
+          name: 'Pure chili oil',
+          price: 4.99,
+          category: 'Food',
+          imageUrl: 'https://m.media-amazon.com/images/I/61ubMhV+GDL._SX679_.jpg',
+        ),
+      ];
+    }
 
-    // Generate product items using fetched images
-    return List.generate(widget.productCount, (index) {
-      return ProductItem(
-        name: '${widget.category} Item #${index + 1}',
-        price: 10.0 + index, // Example pricing
-        category: widget.category,
-        imageUrl: imageUrls.isNotEmpty 
-            ? imageUrls[index % imageUrls.length] 
-            : '',
-      );
-    });
+    // If no predefined category matches, return an empty list or handle accordingly.
+    return [];
   }
 
   Future<void> _addToCart(ProductItem product) async {
@@ -110,7 +165,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
             itemBuilder: (context, index) {
               final product = products[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                 child: Card(
                   child: ListTile(
                     leading: SizedBox(
@@ -120,7 +176,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         product.imageUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.error),
+                            const Icon(Icons.error),
                       ),
                     ),
                     title: Text(product.name),
