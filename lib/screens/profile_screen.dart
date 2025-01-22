@@ -500,19 +500,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: GestureDetector(
-                      onTap: () async {
-                        // Use updated productLink for launching URL
-                        if (productLink != null &&
-                            await canLaunchUrl(Uri.parse(productLink))) {
-                          await launchUrl(Uri.parse(productLink),
-                              mode: LaunchMode.externalApplication);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Could not launch product link')),
-                          );
-                        }
-                      },
+                      onTap: () {},
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(8),
                         leading: (imageUrl != null && imageUrl.isNotEmpty)
@@ -529,8 +517,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               )
                             : const Icon(Icons.shopping_bag),
                         title: Text(name),
-                        subtitle: Text(
-                            'Qty: $quantity   Price: \$${price.toStringAsFixed(2)}'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Quantity: $quantity'),
+                            Text('Price: \$${price.toStringAsFixed(2)}'),
+                            const SizedBox(height: 4),
+                            GestureDetector(
+                              onTap: () => _launchURL(productLink!),
+                              child: const Text(
+                                'View Product',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -548,6 +551,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       },
     );
+  }
+
+  Future<void> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not launch $url')),
+      );
+    }
   }
 
   Future<void> _clearCartWithAnimation() async {

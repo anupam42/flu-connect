@@ -115,9 +115,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
               'https://m.media-amazon.com/images/I/61ubMhV+GDL._SX679_.jpg',
         ),
       ];
-    } else if(widget.category == 'Books') {
+    } else if (widget.category == 'Books') {
       return [
-         ProductItem(
+        ProductItem(
           name: 'Book 1',
           price: 14.99,
           category: 'Books',
@@ -125,7 +125,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           imageUrl:
               'https://m.media-amazon.com/images/I/81ehPIYaL5L._SY522_.jpg',
         ),
-         ProductItem(
+        ProductItem(
           name: 'Book 2',
           price: 44.69,
           category: 'Books',
@@ -133,13 +133,35 @@ class _ProductListScreenState extends State<ProductListScreen> {
           imageUrl:
               'https://m.media-amazon.com/images/I/719HBHsXGmL._SY522_.jpg',
         ),
-         ProductItem(
+        ProductItem(
           name: 'Book 3',
           price: 411.77,
           category: 'Books',
           link: 'https://amzn.in/d/0E5ASrL',
           imageUrl:
               'https://m.media-amazon.com/images/I/71tMl8w0dWL._SY522_.jpg',
+        ),
+      ];
+    } else if (widget.category == 'Blog') {
+      return [
+        ProductItem(
+          name: 'Blog',
+          price: 0.00,
+          category: 'Blog',
+          link: 'https://beacons.ai/kalash.rajvansh',
+          imageUrl:
+              'https://cdn.beacons.ai/profile_pictures/youtube/kalash.rajvansh?q=1734337973.810663',
+        ),
+      ];
+    } else if (widget.category == 'Hotels') {
+      return [
+        ProductItem(
+          name: 'Hotels',
+          price: 0.00,
+          category: 'Hotels',
+          link: 'https://g.co/kgs/2CDgP6C',
+          imageUrl:
+              'https://pix8.agoda.net/hotelImages/32843669/0/13ce5392563e8be65271920b32082b63.jpeg',
         ),
       ];
     }
@@ -168,8 +190,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
         'category': product.category,
         'quantity': product.quantity,
         'price': product.price,
-        'imageUrl': product.imageUrl,  // Save imageUrl
-        'link': product.link,          // Save product link
+        'imageUrl': product.imageUrl, // Save imageUrl
+        'link': product.link, // Save product link
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -240,22 +262,34 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '\$${product.price.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        GestureDetector(
-                          onTap: () => _launchURL(product.link),
-                          child: const Text(
-                            'View Product',
-                            style: TextStyle(
-                              color: Colors.blue,
+                        if (product.price <= 0) ...[
+                          GestureDetector(
+                            onTap: () => _launchURL(product.link),
+                            child: const Text(
+                              'View Product',
+                              style: TextStyle(
+                                color: Colors.blue,
+                              ),
                             ),
                           ),
-                        ),
+                        ] else ...[
+                          Text(
+                            '\$${product.price.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          GestureDetector(
+                            onTap: () => _launchURL(product.link),
+                            child: const Text(
+                              'View Product',
+                              style: TextStyle(
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ]
                       ],
                     ),
                     trailing: SizedBox(
