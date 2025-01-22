@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connuect/models/product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
+import 'package:url_launcher/url_launcher.dart';
 
 class ProductListScreen extends StatefulWidget {
   final String category;
@@ -115,6 +115,33 @@ class _ProductListScreenState extends State<ProductListScreen> {
               'https://m.media-amazon.com/images/I/61ubMhV+GDL._SX679_.jpg',
         ),
       ];
+    } else if(widget.category == 'Books') {
+      return [
+         ProductItem(
+          name: 'Book 1',
+          price: 14.99,
+          category: 'Books',
+          link: 'https://amzn.in/d/9gjCbjH',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/81ehPIYaL5L._SY522_.jpg',
+        ),
+         ProductItem(
+          name: 'Book 2',
+          price: 44.69,
+          category: 'Books',
+          link: 'https://amzn.in/d/43sK7I4',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/719HBHsXGmL._SY522_.jpg',
+        ),
+         ProductItem(
+          name: 'Book 3',
+          price: 411.77,
+          category: 'Books',
+          link: 'https://amzn.in/d/0E5ASrL',
+          imageUrl:
+              'https://m.media-amazon.com/images/I/71tMl8w0dWL._SY522_.jpg',
+        ),
+      ];
     }
     return [];
   }
@@ -146,12 +173,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error adding to cart: $e')));
     }
   }
 
   int _totalCartItems(List<ProductItem> products) {
+    // ignore: avoid_types_as_parameter_names
     return products.fold(0, (sum, item) => sum + item.quantity);
   }
 

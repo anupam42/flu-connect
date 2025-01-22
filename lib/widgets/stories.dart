@@ -44,7 +44,8 @@ class Stories extends StatelessWidget {
                   onTap: () {
                     // Add your connect functionality here
                   },
-                  child: Padding( // Added padding for spacing
+                  child: Padding(
+                    // Added padding for spacing
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: SizedBox(
                       width: 70,
@@ -64,11 +65,12 @@ class Stories extends StatelessWidget {
                               child: CircleAvatar(
                                 backgroundColor: Colors.grey.shade300,
                                 radius: 30,
-                                child: Text(
-                                  'Connect',
-                                  style: GoogleFonts.meowScript(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
+                                child: SizedBox(
+                                  width: 40, // adjust width as needed
+                                  height: 40, // adjust height as needed
+                                  child: Image.asset(
+                                    'assets/connuect.jpeg',
+                                    fit: BoxFit.fitWidth,
                                   ),
                                 ),
                               ),
@@ -149,42 +151,42 @@ class _StoriesCardGroupState extends State<StoriesCardGroup> {
         child: SizedBox(
           width: 70,
           child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isViewed
-                      ? Colors.transparent
-                      : const Color.fromARGB(255, 237, 101, 232),
-                  width: 3,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isViewed
+                        ? Colors.transparent
+                        : const Color.fromARGB(255, 237, 101, 232),
+                    width: 3,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(firstStory['userimage']),
+                    backgroundColor: secondaryColor,
+                    radius: 40,
+                  ),
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(firstStory['userimage']),
-                  backgroundColor: secondaryColor,
-                  radius: 40,
+              const SizedBox(height: 4),
+              Text(
+                firstStory['username'],
+                style: GoogleFonts.roboto(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              firstStory['username'],
-              style: GoogleFonts.roboto(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }

@@ -8,6 +8,9 @@ class ReelService {
   final _reels = <String>[
    'assets/videos/video1.mov',
    'assets/videos/video2.mov',
+   'assets/videos/video3.mov',
+   'assets/videos/video4.mov',
+   'assets/videos/video5.mov',
   ];
 
   Future getVideosFromApI() async {

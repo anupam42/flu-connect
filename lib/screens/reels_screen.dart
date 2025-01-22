@@ -20,10 +20,9 @@ class _VideoReelPageState extends State<VideoReelPage> {
   final Map<int, String> reelCategories = {
     0: 'Clothing',
     1: 'Food',
-    2: 'Appliances',
-    3: 'Groceries',
-    4: 'Electronics',
-    5: 'Household',
+    2: 'Books',
+    3: 'Hotels',
+    4: 'Blog',
   };
 
   @override

@@ -74,6 +74,9 @@ flutter:
     - assets/connuect.jpeg
     - assets/videos/video1.mov
     - assets/videos/video2.mov
+    - assets/videos/video3.mov
+    - assets/videos/video4.mov
+    - assets/videos/video5.mov
     # - assets/conneuct.jpeg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
