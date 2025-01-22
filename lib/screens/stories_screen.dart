@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:story_view/story_view.dart';
-
 import '../resources/firestore_methods.dart';
 import '../utils/colors.dart';
 
