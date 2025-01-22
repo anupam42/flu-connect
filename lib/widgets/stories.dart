@@ -10,15 +10,15 @@ class Stories extends StatelessWidget {
   // Define dummy stories for the "Connect" avatar
   final List<Map<String, dynamic>> dummyConnectStories = const [
     {
-      'uid': 'connect_dummy_1',
-      'username': 'Alice',
+      'uid': 'connect',
+      'username': 'connect',
       'userimage':
           'https://cdn.pixabay.com/photo/2024/08/15/19/19/highland-cow-8972000_1280.jpg',
       'storyContent': 'Story content for Alice',
     },
     {
-      'uid': 'connect_dummy_2',
-      'username': 'Bob',
+      'uid': 'connect',
+      'username': 'connect',
       'userimage':
           'https://cdn.pixabay.com/photo/2021/10/02/21/00/ural-owl-6676441_1280.jpg',
       'storyContent': 'Story content for Bob',
@@ -58,7 +58,7 @@ class Stories extends StatelessWidget {
                     Navigator.of(context).push(
                       PageAnimation.createRoute(
                         page: const StoriesScreen(
-                          username: 'Connect',
+                          username: 'Connuect',
                           profPic: 'assets/connuect.jpeg',
                           uid: 'connect',
                         ),
