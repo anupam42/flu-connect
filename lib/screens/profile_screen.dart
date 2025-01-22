@@ -158,12 +158,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           icon: const Icon(Icons.grid_on),
                           text: 'Posts ($postLen)',
                         ),
-                        Tab(
-                          icon: const Icon(Icons.video_library),
+                        const Tab(
+                          icon: Icon(Icons.video_library),
                           text: 'Videos',
                         ),
-                        Tab(
-                          icon: const Icon(Icons.shopping_bag),
+                        const Tab(
+                          icon: Icon(Icons.shopping_bag),
                           text: 'Products',
                         ),
                         Tab(

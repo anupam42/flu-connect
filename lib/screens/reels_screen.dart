@@ -82,16 +82,16 @@ class _VideoReelPageState extends State<VideoReelPage> {
                 right: 20,
                 child: Row(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 24,
                       backgroundImage: NetworkImage(
                         'https://via.placeholder.com/150', // Replace with actual profile photo URL
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Text(
+                    const Text(
                       'UserName', // Replace with dynamic user name
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
