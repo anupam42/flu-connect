@@ -8,11 +8,13 @@ class StoriesScreen extends StatefulWidget {
   final String username;
   final String uid;
   final String profPic;
+  final List<Map<String, dynamic>>? stories;
 
   const StoriesScreen(
       {required this.username,
       required this.uid,
       required this.profPic,
+      this.stories,
       super.key});
 
   @override
